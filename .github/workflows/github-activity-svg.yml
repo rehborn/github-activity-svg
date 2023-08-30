@@ -1,0 +1,48 @@
+name: Run Github Activity Action
+
+on:
+  workflow_dispatch:
+    inputs:
+      months:
+        type: choice
+        description: 'number of months to generate'
+        options:
+        - "1"
+        - "2"
+        - "3"
+        - "6"
+        - "12"
+        - "24"
+
+#  schedule:
+#    - cron: '0 0,12,18 * * *'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  generate-and-publish-svg:
+    name: Generate Activity SVGs and Publish to Github Pages
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: "Run Github Activity SVG Action"
+        uses: rehborn/github-activity-svg@v1
+        with:
+          months: ${{ inputs.months || '3' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_ACTOR: ${{ github.actor }}
+          WAKATIME_JSON_URL: ${{ secrets.WAKATIME_JSON_URL }}
+
+      - name: Upload Web artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: ./dist/
+
+      - name: Deploying Web artifact
+        uses: actions/deploy-pages@v2

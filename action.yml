@@ -1,0 +1,18 @@
+name: 'GitHub Activity SVG'
+author: Dominique Rehborn
+description: 'Generate Monthly Calendar SVGs for GitHub and Wakatime activities'
+
+inputs:
+  months:
+    description: 'number of months to generate'
+    required: false
+    default: "3"
+
+# docker
+runs:
+  using: 'docker'
+  image: 'docker://ghcr.io/rehborn/github-activity-svg:main'
+  args:
+    - --work-dir=/github/workspace/
+    - --months=${{ inputs.months }}
+
